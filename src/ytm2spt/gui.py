@@ -115,10 +115,20 @@ class YouTubeSettingsDialog(QDialog):
         layout.addWidget(self.message_label)
 
     def get_oauth_token(self):
-        setup_oauth(filepath=YTOAUTH_PATH, open_browser=True)
-        self.message_label.setText("OAuth token saved at " + YTOAUTH_PATH)
-        # Qt sleep 3 seconds
-        QtCore.QTimer.singleShot(3000, self.close)
+        try:
+            # For ytmusicapi < 1.8.0, filepath and open_browser are the main parameters
+            setup_oauth(filepath=YTOAUTH_PATH, open_browser=True)
+            self.message_label.setText("OAuth token saved at " + YTOAUTH_PATH)
+            # Qt sleep 3 seconds
+            QtCore.QTimer.singleShot(3000, self.close)
+        except Exception as e:
+            error_msg = str(e)
+            self.message_label.setText(
+                f"Error: {error_msg}\n\n"
+                f"Please run this command from terminal instead:\n"
+                f"conda activate ymts\n"
+                f"ytmusicapi oauth --file {YTOAUTH_PATH}"
+            )
 
 
 class MainWindow(QMainWindow):
